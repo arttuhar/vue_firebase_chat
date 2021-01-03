@@ -22,10 +22,29 @@
       <button class="logout">Logout</button>
       <h1>Welcome, {{ state.username }}</h1>
     </header>
-    <section class="chat-box">// There should be messages</section>
+    <section class="chat-box">
+      <div
+        v-for="message in state.messages"
+        :key="message.key"
+        :class="
+          message.username == state.username
+            ? 'message current-user'
+            : 'message'
+        "
+      >
+        <div class="message-inner">
+          <div class="username">{{ message.username }}</div>
+          <div class="content">{{ message.content }}</div>
+        </div>
+      </div>
+    </section>
     <footer>
-      <form @submit.prevent="">
-        <input type="text" placeholder="Write something" />
+      <form @submit.prevent="SendMessage">
+        <input
+          type="text"
+          v-model="inputMessage"
+          placeholder="Write something"
+        />
         <input type="submit" value="Send" />
       </form>
     </footer>
@@ -39,6 +58,7 @@ import db from "./db";
 export default {
   setup() {
     const inputUsername = ref("");
+    const inputMessage = ref("");
 
     const state = reactive({
       username: "",
@@ -52,10 +72,44 @@ export default {
       }
     };
 
+    const SendMessage = () => {
+      const messagesRef = db.database().ref("messages");
+
+      if (inputMessage.value === "" || inputMessage.value === null) {
+        return;
+      }
+      const message = {
+        username: state.username,
+        content: inputMessage.value,
+      };
+      messagesRef.push(message);
+      inputMessage.value = "";
+    };
+
+    onMounted(() => {
+      const messagesRef = db.database().ref("messages");
+
+      messagesRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        let messages = [];
+
+        Object.keys(data).forEach((key) => {
+          messages.push({
+            id: key,
+            username: data[key].username,
+            content: data[key].content,
+          });
+        });
+        state.messages = messages;
+      });
+    });
+
     return {
       inputUsername,
       Login,
       state,
+      inputMessage,
+      SendMessage,
     };
   },
 };
