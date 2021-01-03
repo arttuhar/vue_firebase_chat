@@ -34,7 +34,7 @@
 
 <script>
 import { reactive, onMounted, ref } from "vue";
-import database from "./database";
+import db from "./db";
 
 export default {
   setup() {

@@ -10,5 +10,5 @@ const config = {
 	appId: process.env.APP_ID,
 };
 
-const database = firebase.initializeApp(config);
-export default database;
+const db = firebase.initializeApp(config);
+export default db;
