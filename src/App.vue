@@ -19,7 +19,7 @@
 
   <div class="view chat" v-else>
     <header>
-      <button class="logout">Logout</button>
+      <button class="logout" @click="Logout">Logout</button>
       <h1>Welcome, {{ state.username }}</h1>
     </header>
     <section class="chat-box">
@@ -72,6 +72,10 @@ export default {
       }
     };
 
+    const Logout = () => {
+      state.username = "";
+    };
+
     const SendMessage = () => {
       const messagesRef = db.database().ref("messages");
 
@@ -110,6 +114,7 @@ export default {
       state,
       inputMessage,
       SendMessage,
+      Logout,
     };
   },
 };
